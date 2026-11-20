@@ -10,6 +10,7 @@ counter dut (
     .count(count)
 );
 
+// Assertion on counter output
 assert property (
     @(posedge clk)
     disable iff (!rst_n)
@@ -24,6 +25,7 @@ initial begin
         clk = ~clk;
 end
 
+// Test sequence
 initial begin
 
     rst_n = 0;
@@ -37,6 +39,7 @@ initial begin
 
     @(negedge clk);
 
+    // Assertion on final count value
     assert(count == 20)
         else $fatal("Count mismatch");
 
