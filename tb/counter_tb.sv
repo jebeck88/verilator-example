@@ -2,8 +2,17 @@ module counter_tb;
 
 // Test bench signals
 logic clk;
+logic async_rst_n;
 logic rst_n;
 logic [7:0] count;
+
+
+// Instantiate the reset synchronizer
+tb_reset_sync reset_sync (
+    .clk(clk),
+    .async_rst_n(async_rst_n),
+    .rst_n(rst_n)
+);
 
 // Instantaiate the DUT
 counter dut (
@@ -74,14 +83,11 @@ endtask
 // Task for applying reset
 task automatic apply_reset();
 begin
-    // Apply reset for 2 clock cycles
-    rst_n = 0;
-    @(posedge clk);
-    @(posedge clk);
-    // Wait for falling edge of clk
-    @(negedge clk);   
-    // Release reset
-    rst_n = 1;
+    async_rst_n = 0;
+    @(negedge clk);
+    async_rst_n = 1;
+    wait (rst_n);
+    @(negedge clk);
 end
 endtask
 
