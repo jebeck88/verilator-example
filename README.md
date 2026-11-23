@@ -95,6 +95,19 @@ Use only when needed.
 
 Waveforms should become a debugging tool rather than the primary verification mechanism.
 
+The test script enables Verilator's VCD tracing and writes `counter_tb.vcd` in the
+repository root. From the Ubuntu/WSL terminal, run:
+
+```bash
+./scripts/run_tests.sh
+gtkwave counter_tb.vcd
+```
+
+In GTKWave, expand `counter_tb` in the signal browser, select signals such as
+`clk`, `async_rst_n`, `rst_n`, and `count`, then add them to the waveform pane
+(double-clicking a signal also adds it). Use **Zoom Fit** to see the full
+simulation. The VCD file is overwritten each time the test script runs.
+
 Workflow:
 
 ```text

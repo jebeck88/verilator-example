@@ -38,6 +38,8 @@ end
 
 // Test sequence
 initial begin
+    $dumpfile("counter_tb.vcd");
+    $dumpvars(0, counter_tb);
 
     apply_reset();
 
