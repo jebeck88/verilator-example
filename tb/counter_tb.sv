@@ -1,16 +1,18 @@
 module counter_tb;
 
+// Test bench signals
 logic clk;
 logic rst_n;
 logic [7:0] count;
 
+// Instantaiate the DUT
 counter dut (
     .clk(clk),
     .rst_n(rst_n),
     .count(count)
 );
 
-// Assertion on counter output
+// Assertion on count when not in reset
 assert property (
     @(posedge clk)
     disable iff (!rst_n)
@@ -28,25 +30,59 @@ end
 // Test sequence
 initial begin
 
-    rst_n = 0;
+    apply_reset();
 
-    #20;
+    assert(count == 0);
 
-    rst_n = 1;
+    step(1);
+    assert(count == 1);
 
-    repeat (20)
-        @(posedge clk);
+    step(9);
+    assert(count == 10);
 
-    @(negedge clk);
+    step(245);
+    assert(count == 255);
 
-    // Assertion on final count value
-    assert(count == 20)
-        else $fatal("Count mismatch");
+    step(1);
+    assert(count == 0);
+
+    step(4);
+    assert(count == 4);    
+
+    apply_reset();
+
+    assert(count == 0);
 
     $display("PASS");
-
     $finish;
 
 end
+
+// Task for advancing simulation by n clock cycles
+task automatic step(int n = 1);
+begin
+    // Apply n clock cycles
+    repeat(n)
+        @(posedge clk);
+                
+    // Now wait for the next falling edge of clk
+    // before checking assertions
+    @(negedge clk);
+end
+endtask
+
+// Task for applying reset
+task automatic apply_reset();
+begin
+    // Apply reset for 2 clock cycles
+    rst_n = 0;
+    @(posedge clk);
+    @(posedge clk);
+    // Wait for falling edge of clk
+    @(negedge clk);   
+    // Release reset
+    rst_n = 1;
+end
+endtask
 
 endmodule
