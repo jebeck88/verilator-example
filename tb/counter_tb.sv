@@ -83,10 +83,13 @@ endtask
 // Task for applying reset
 task automatic apply_reset();
 begin
+    // Assert reset for one clock cycle
     async_rst_n = 0;
     @(negedge clk);
+    // Deassert reset and wait for it to synchronize
     async_rst_n = 1;
     wait (rst_n);
+    // Wait for the next falling edge of clk before continuing
     @(negedge clk);
 end
 endtask
